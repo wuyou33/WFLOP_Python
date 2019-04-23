@@ -97,3 +97,84 @@ time_stamp = datetime.now().strftime("%Y%m%d%H%M%S")
 filename = "{}/result_CGA_{}.dat".format(CGA_results_data_folder, time_stamp)
 np.savetxt(filename, result_arr, fmt='%f', delimiter="  ")
 ```
+
+### Run adaptive genetic algorithm (AGA)
+```python
+# AGA method
+AGA_results_data_folder = "{}/AGA".format(results_data_folder)
+if not os.path.exists(AGA_results_data_folder):
+    os.makedirs(AGA_results_data_folder)
+for i in range(0, n_run_times):  # run times
+    print("run times {} ...".format(i))
+    wfg.load_init_pop("{}/init_{}.dat".format(init_pops_data_folder, i))
+    run_time, eta = wfg.adaptive_genetic_alg(ind_time=i, result_folder=AGA_results_data_folder)
+    result_arr[i, 0] = run_time
+    result_arr[i, 1] = eta
+time_stamp = datetime.now().strftime("%Y%m%d%H%M%S")
+filename = "{}/result_AGA_{}.dat".format(AGA_results_data_folder, time_stamp)
+np.savetxt(filename, result_arr, fmt='%f', delimiter="  ")
+```
+
+### Run self-informed genetic algorithm (SIGA)
+#### Generate wind distribution surface
+```python
+wds_data_folder = "data/wds"
+if not os.path.exists(wds_data_folder):
+    os.makedirs(wds_data_folder)
+# mc : monte-carlo
+n_mc_samples = 10000
+
+# each layout is binary list and the length of the list is (rows*cols)
+# 1 indicates there is a wind turbine in that cell
+# 0 indicates there is no wind turbine in the cell
+# in "mc_layout.dat", there are 'n_mc_samples' line and each line is a layout.
+
+# generate 'n_mc_samples' layouts and save it in 'mc_layout.data' file
+WindFarmGeneticToolbox.LayoutGridMCGenerator.gen_mc_grid(rows=rows, cols=cols, n=n_mc_samples, N=N,
+                                                         lofname="{}/{}".format(wds_data_folder, "mc_layout.dat"))
+# read layouts from 'mc_layout.dat' file
+layouts = np.genfromtxt("{}/{}".format(wds_data_folder,"mc_layout.dat"), delimiter="  ", dtype=np.int32)
+
+# generate dataset to build wind farm distribution surface
+wfg.mc_gen_xy(rows=rows, cols=cols, layouts=layouts, n=n_mc_samples, N=N, xfname="{}/{}".format(wds_data_folder, "x.dat"),
+              yfname="{}/{}".format(wds_data_folder, "y.dat"))
+
+# parameters for MARS regression method
+n_variables = 2
+n_points = rows * cols
+n_candidate_knots = [rows, cols]
+n_max_basis_functions = 100
+n_max_interactions = 4
+difference = 1.0e-3
+
+x_original = pd.read_csv("{}/{}".format(wds_data_folder,"x.dat"), header=None, nrows=n_points, delim_whitespace=True)
+x_original = x_original.values
+
+y_original = pd.read_csv("{}/{}".format(wds_data_folder,"y.dat"), header=None, nrows=n_points, delim_whitespace=True)
+y_original = y_original.values
+
+mars = MARS.MARS(n_variables=n_variables, n_points=n_points, x=x_original, y=y_original,
+                 n_candidate_knots=n_candidate_knots, n_max_basis_functions=n_max_basis_functions,
+                 n_max_interactions=n_max_interactions, difference=difference)
+mars.MARS_regress()
+# save wind distribution model to 'wds.mars'
+mars.save_mars_model_to_file("{}/{}".format(wds_data_folder,"wds.mars"))
+```
+#### SIGA method
+```python
+SIGA_results_data_folder = "{}/SIGA".format(results_data_folder)
+if not os.path.exists(SIGA_results_data_folder):
+    os.makedirs(SIGA_results_data_folder)
+# wds_mars_file : wind distribution surface MARS model file
+wds_mars_file = "{}/{}".format(wds_data_folder, "wds.mars")
+for i in range(0, n_run_times):  # run times
+    print("run times {} ...".format(i))
+    wfg.load_init_pop("{}/init_{}.dat".format(init_pops_data_folder, i))
+    run_time, eta = wfg.self_informed_genetic_alg(ind_time=i, result_folder=SIGA_results_data_folder,
+                                                   wds_file=wds_mars_file)
+    result_arr[i, 0] = run_time
+    result_arr[i, 1] = eta
+time_stamp = datetime.now().strftime("%Y%m%d%H%M%S")
+filename = "{}/result_self_informed_{}.dat".format(SIGA_results_data_folder, time_stamp)
+np.savetxt(filename, result_arr, fmt='%f', delimiter="  ")
+```
