@@ -1,6 +1,6 @@
 # Wind farm layout optimization problem (WFLOP) Python toolbox
 ## Reference
-[1] Xinglong Ju, and Feng Liu. "Wind farm layout optimization using self-informed genetic algorithm with information guided exploitation." *Applied Energy* 248 (2019): 429-445.<br/>
+[1] Xinglong Ju, and Feng Liu. "Wind farm layout optimization using self-informed genetic algorithm with information guided exploitation." *Applied Energy* 248 (2019): 429-445. DOI: [10.1016/j.apenergy.2019.04.084](https://doi.org/10.1016/j.apenergy.2019.04.084)<br/>
 [2] Xinglong Ju, Victoria C. P. Chen, Jay M. Rosenberger, and Feng Liu. "Knot Optimization for Multivariate Adaptive Regression Splines." In *IISE Annual Conference*. Proceedings, Institute of Industrial and Systems Engineers (IISE), 2019.
 
 <p align="center"> 
