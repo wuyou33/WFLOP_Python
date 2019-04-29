@@ -3,6 +3,8 @@
 [1] Xinglong Ju, and Feng Liu. "Wind farm layout optimization using self-informed genetic algorithm with information guided exploitation." *Applied Energy* 248 (2019): 429-445. DOI: <a href="https://doi.org/10.1016/j.apenergy.2019.04.084" target="_blank">10.1016/j.apenergy.2019.04.084</a><br/>
 [2] Xinglong Ju, Victoria C. P. Chen, Jay M. Rosenberger, and Feng Liu. "Knot Optimization for Multivariate Adaptive Regression Splines." In *IISE Annual Conference*. Proceedings, Institute of Industrial and Systems Engineers (IISE), 2019.
 
+If you have any questions, please email *fliu0@mgh.harvard.edu* or *xinglong.ju@mavs.uta.edu*.
+
 <p align="center"> 
     <img width="400" src="/IMAGES/wfi.png" alt="Wind farm land cells illustration"/><br/>
     Wind farm land cells illustration.
